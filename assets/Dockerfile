@@ -41,7 +41,7 @@ ENV LUAROCKS_OPTS="CRYPTO_DIR=$LUAROCKS_CRYPTO_DIR OPENSSL_DIR=$LUAROCKS_OPENSSL
 # net-tools: provides `netstat`
 
 RUN apt update \
-    && apt install -y zip make jq m4 curl build-essential wget git libssl-dev zlib1g-dev lsb-release psmisc net-tools
+    && apt install -y zip make jq m4 curl build-essential wget git libssl-dev zlib1g-dev lsb-release psmisc net-tools cmake gcc
 RUN /pongo/install-python.sh
 RUN pip3 install httpie
 RUN curl -k -s -S -L https://github.com/fullstorydev/grpcurl/releases/download/v1.7.0/grpcurl_1.7.0_linux_x86_64.tar.gz | tar xz -C /kong/bin
@@ -51,6 +51,16 @@ RUN cd /kong \
     && luarocks install busted-htest \
     && luarocks install luacov
 
+# Clone lua-oasvalidator and its submodules
+RUN git clone --recursive https://github.com/nawaz1991/lua-oasvalidator.git /lua-oasvalidator
+
+# Install lua oasvalidator module
+RUN cd /lua-oasvalidator \
+    && luarocks make oasvalidator-1.0.0-1.rockspec
+
+# Copy the OAS specs to be used for tests
+RUN mkdir /data
+COPY assets/openAPI_example.json /data/openAPI_example.json
 
 # make sure resty, LuaJIT, and our custom Busted are in our path
 ENV PATH="/kong/bin:/usr/local/openresty/bin:/usr/local/openresty/luajit/bin:${PATH}"
