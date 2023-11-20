@@ -1158,7 +1158,7 @@ function main {
       -e KONG_TEST_DONT_CLEAN \
       -e PONGO_CLIENT_VERSION="$PONGO_VERSION" \
       kong \
-      "$WINDOWS_SLASH/bin/bash" "-c" "bin/busted --helper=$WINDOWS_SLASH/pongo/busted_helper.lua ${busted_params[*]} ${busted_files[*]}"
+      "$WINDOWS_SLASH/bin/bash" "-c" "bin/busted  --coverage --helper=$WINDOWS_SLASH/pongo/busted_helper.lua ${busted_params[*]} ${busted_files[*]};luacov;cat luacov.report.out"
     ;;
 
   shell)
